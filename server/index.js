@@ -15,10 +15,14 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Enable CORS
+// Configure CORS origin (support custom allowed origins array or default '*')
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
+  : '*';
+
 app.use(
   cors({
-    origin: '*',
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
@@ -39,10 +43,12 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
+// Listen on 0.0.0.0 for Render compatibility
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`=======================================================`);
   console.log(`🚀 AI Project Analyzer Backend Server running on port ${PORT}`);
-  console.log(`   Health check endpoint: http://localhost:${PORT}/api/health`);
-  console.log(`   Analyze endpoint:      http://localhost:${PORT}/api/projects/analyze`);
+  console.log(`   Host: 0.0.0.0`);
+  console.log(`   Health check endpoint: /api/health`);
+  console.log(`   Analyze endpoint:      /api/projects/analyze`);
   console.log(`=======================================================`);
 });

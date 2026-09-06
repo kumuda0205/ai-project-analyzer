@@ -1,6 +1,13 @@
+const API_BASE_URL = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
+
+function getEndpoint(path) {
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  return API_BASE_URL ? `${API_BASE_URL}${cleanPath}` : cleanPath;
+}
+
 export async function checkHealth() {
   try {
-    const res = await fetch('/api/health');
+    const res = await fetch(getEndpoint('/api/health'));
     if (!res.ok) {
       return { status: 'error', apiKeyConfigured: false };
     }
@@ -14,7 +21,7 @@ export async function analyzeProjectZip(file) {
   const formData = new FormData();
   formData.append('file', file);
 
-  const res = await fetch('/api/projects/analyze', {
+  const res = await fetch(getEndpoint('/api/projects/analyze'), {
     method: 'POST',
     body: formData,
   });
